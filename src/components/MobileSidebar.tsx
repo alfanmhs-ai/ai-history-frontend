@@ -1,0 +1,203 @@
+'use client'
+
+import { useState } from 'react'
+import { MessageSquare, MapPin, Clock, Star, X, Plus } from 'lucide-react'
+
+interface Conversation {
+  id: string
+  title: string
+  lastMessage: string
+  timestamp: string
+  isActive?: boolean
+}
+
+interface PopularPlace {
+  id: string
+  name: string
+  description: string
+  rating: number
+}
+
+interface MobileSidebarProps {
+  isOpen: boolean
+  onClose: () => void
+}
+
+export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
+  const [isPlacesExpanded, setIsPlacesExpanded] = useState(true)
+  const [isHistoryExpanded, setIsHistoryExpanded] = useState(true)
+
+  const conversations: Conversation[] = [
+    {
+      id: '1',
+      title: 'Pusat Perbelanjaan di Madiun',
+      lastMessage: 'Di mana Pahlawan Street Center?',
+      timestamp: '10:30',
+      isActive: true
+    },
+    {
+      id: '2',
+      title: 'Kuliner Khas Madiun',
+      lastMessage: 'Apa saja makanan khasnya?',
+      timestamp: 'Kemarin'
+    },
+    {
+      id: '3',
+      title: 'Transportasi Umum',
+      lastMessage: 'Bagaimana cara ke alun-alun?',
+      timestamp: '2 hari lalu'
+    }
+  ]
+
+  const popularPlaces: PopularPlace[] = [
+    {
+      id: '1',
+      name: 'Pahlawan Street Center',
+      description: 'Pusat perbelanjaan modern',
+      rating: 4.5
+    },
+    {
+      id: '2',
+      name: 'Monumen Kresek',
+      description: 'Ikons sejarah kota Madiun',
+      rating: 4.3
+    },
+    {
+      id: '3',
+      name: 'Alun-Alun Kota Madiun',
+      description: 'Taman kota yang luas',
+      rating: 4.2
+    },
+    {
+      id: '4',
+      name: 'Taman Rekreasi Wilis',
+      description: 'Tempat wisata keluarga',
+      rating: 4.1
+    }
+  ]
+
+  if (!isOpen) return null
+
+  return (
+    <>
+      {/* Overlay */}
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+        onClick={onClose}
+      />
+      
+      {/* Mobile Sidebar */}
+      <div className="fixed inset-y-0 left-0 w-80 bg-white shadow-xl z-50 lg:hidden transform transition-transform duration-300 ease-in-out">
+        <div className="flex flex-col h-full">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-900">Menu</h2>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 overflow-y-auto">
+            {/* Popular Places Section */}
+            <div className="border-b border-gray-200">
+              <button
+                onClick={() => setIsPlacesExpanded(!isPlacesExpanded)}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-primary-500" />
+                  <h3 className="font-semibold text-gray-900">Tempat Populer</h3>
+                </div>
+                <svg 
+                  className={`w-4 h-4 text-gray-500 transform transition-transform ${isPlacesExpanded ? 'rotate-180' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {isPlacesExpanded && (
+                <div className="animate-slide-up">
+                  {popularPlaces.map((place) => (
+                    <div key={place.id} className="sidebar-item">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900">{place.name}</h4>
+                        <p className="text-sm text-gray-500">{place.description}</p>
+                        <div className="flex items-center gap-1 mt-1">
+                          <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                          <span className="text-xs text-gray-600">{place.rating}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Conversation History Section */}
+            <div>
+              <button
+                onClick={() => setIsHistoryExpanded(!isHistoryExpanded)}
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-primary-500" />
+                  <h3 className="font-semibold text-gray-900">Histori Percakapan</h3>
+                </div>
+                <svg 
+                  className={`w-4 h-4 text-gray-500 transform transition-transform ${isHistoryExpanded ? 'rotate-180' : ''}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {isHistoryExpanded && (
+                <div className="animate-slide-up">
+                  {conversations.map((conversation) => (
+                    <div
+                      key={conversation.id}
+                      className={`sidebar-item ${
+                        conversation.isActive ? 'sidebar-item-active' : ''
+                      }`}
+                    >
+                      <MessageSquare className="w-4 h-4 text-gray-400" />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-medium text-gray-900 truncate">
+                          {conversation.title}
+                        </h4>
+                        <p className="text-sm text-gray-500 truncate">
+                          {conversation.lastMessage}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        <Clock className="w-3 h-3" />
+                        <span>{conversation.timestamp}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="p-4 border-t border-gray-200">
+            <button className="w-full py-2 px-4 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium flex items-center justify-center gap-2">
+              <Plus className="w-4 h-4" />
+              Percakapan Baru
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
